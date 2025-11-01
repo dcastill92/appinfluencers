@@ -17,9 +17,10 @@ app = FastAPI(
 )
 
 # Configure CORS
+# Allow all origins in production for now (can be restricted later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Allow all origins temporarily
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,6 +64,8 @@ async def startup_event():
     print(f"Starting {settings.APP_NAME} v{settings.VERSION}")
     print(f"Environment: {settings.ENVIRONMENT}")
     print(f"Debug mode: {settings.DEBUG}")
+    print(f"CORS: Allowing all origins (*)") 
+    print(f"Database URL: {settings.DATABASE_URL[:20]}...")
 
 
 @app.on_event("shutdown")
