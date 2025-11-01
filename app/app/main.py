@@ -16,16 +16,14 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS
-# Allow all origins in production for now (can be restricted later)
-origins_list = settings.ALLOWED_ORIGINS.split(",")
-
+# Configure CORS - Allow all origins for now
 app.add_middleware(
-  CORSMiddleware,
-    allow_origins=origins_list, 
+    CORSMiddleware,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include routers
