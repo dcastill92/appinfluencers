@@ -1,4 +1,11 @@
+databases:
+  # 1. Base de datos PostgreSQL
+  - name: influencers-db
+    databaseName: influencers_82bo
+    plan: free # El plan gratuito de Render
+    
 services:
+<<<<<<< HEAD
   # Base de datos PostgreSQL
   - type: pserv
     name: influencers-db
@@ -16,20 +23,29 @@ services:
 
   # Backend FastAPI
   # Configuración actualizada - Sin Stripe, Facebook, Instagram
+=======
+  # 2. Backend FastAPI
+>>>>>>> 8aefd948b34483a1fd2d77484e211815758ca07a
   - type: web
     name: influencers-api
     env: docker
-    repo: https://github.com/tu-usuario/influencers
+    repo: https://github.com/dcastill92/appinfluencers
     dockerfilePath: ./Dockerfile
-    plan: starter
-    healthCheckPath: /health
+    plan: free
+    healthCheckPath: / # Ruta más segura para el health check
+    
+    # --- ¡SECCIÓN AÑADIDA! ---
+    # Aquí es donde va tu conexión a la base de datos
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: influencers-db
           property: connectionString
+      
+      # Variables de seguridad que tu app necesita para arrancar
       - key: SECRET_KEY
         generateValue: true
+<<<<<<< HEAD
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
@@ -50,22 +66,59 @@ services:
         sync: false
       - key: EMAIL_FROM
         sync: false
+=======
+      - key: ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
 
-  # Frontend Next.js
+      # Variables de Meta (¡DEBES REEMPLAZARLAS!)
+      - key: FACEBOOK_APP_ID
+        value: "1531422201378331" 
+      - key: FACEBOOK_APP_SECRET
+        value: "67e9b81b1ae62703dd9f45417ff4d548"
+      - key: INSTAGRAM_ACCESS_TOKEN
+        value: "234324324324"
+>>>>>>> 8aefd948b34483a1fd2d77484e211815758ca07a
+
+      - key: STRIPE_SECRET_KEY
+        value: "sk_test_51SOYTmCvGKn4CNyQaJfoQksfh6y6jdvWuYQxIgqAxekY9Fn7ciw3wSae6uvJ69NCfjC48G0wUfCarcWO3q5FfrQQ0063BEGd6a"
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: "pk_test_51SOYTmCvGKn4CNyQ9NmkXxdPiCJ06ezsHJpMmbTCx9gRIH1PMKxBPk7P8dlrUIzBrNFywqv9oPouZvH53yjgbf3a00Aj2yzZaX"
+      - key: PLATFORM_COMMISSION_RATE
+        value: "0.15"
+
+      - key: SMTP_HOST
+        value: "smtp.gmail.com"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: "dcastill92@gmail.com"
+      - key: SMTP_PASSWORD
+        value: "Temporal$1"
+      - key: SMTP_USER
+        EMAIL_FROM: "noreply@influencersplatform.com"
+
+  # 3. Frontend Next.js
   - type: web
     name: influencers-frontend
-    env: docker
-    repo: https://github.com/tu-usuario/influencers
-    dockerfilePath: ./frontend/Dockerfile
-    plan: starter
-    healthCheckPath: /
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        value: https://influencers-api.onrender.com
-      - key: NEXT_PUBLIC_FACEBOOK_APP_ID
-        value: "1531422201378331"
-
-# Dominios (opcional)
-databases:
-  - name: influencers-db
+    runtime: node # ARREGLO: Se define como 'node'
+    repo: https://github.com/dcastill92/appinfluencers
+    rootDir: ./frontend 
     plan: free
+    
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    
+    buildFilter:
+      paths:
+      - frontend/**
+      
+    envVars:
+      # --- ¡INDENTACIÓN CORREGIDA! ---
+      - key: NEXT_PUBLIC_API_URL
+        value: https://${influencers-api.host}
+      
+      # Variable de Meta para el Frontend
+      - key: NEXT_PUBLIC_FACEBOOK_APP_ID
+        value: "1531422201378331" # Usa el mismo App ID que arriba
