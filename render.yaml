@@ -56,10 +56,7 @@ services:
     envVars:
       # --- ¡INDENTACIÓN CORREGIDA! ---
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: influencers-api 
-          property: url
+        value: https://${influencers-api.host}
       
       # Variable de Meta para el Frontend
       - key: NEXT_PUBLIC_FACEBOOK_APP_ID
