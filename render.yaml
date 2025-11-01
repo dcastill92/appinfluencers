@@ -38,6 +38,24 @@ services:
       - key: INSTAGRAM_ACCESS_TOKEN
         value: "234324324324"
 
+      - key: STRIPE_SECRET_KEY
+        value: "sk_tu_clave_secreta_de_stripe"
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: "pk_tu_clave_publica_de_stripe"
+      - key: PLATFORM_COMMISSION_RATE
+        value: "0.15"
+
+      - key: SMTP_HOST
+        value: "smtp.gmail.com"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: "dcastill92@gmail.com"
+      - key: SMTP_PASSWORD
+        value: "Temporal$1"
+      - key: SMTP_USER
+        EMAIL_FROM: "noreply@influencersplatform.com"
+
   # 3. Frontend Next.js
   - type: web
     name: influencers-frontend
