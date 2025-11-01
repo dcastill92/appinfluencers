@@ -39,9 +39,9 @@ services:
         value: "234324324324"
 
       - key: STRIPE_SECRET_KEY
-        value: "sk_tu_clave_secreta_de_stripe"
+        value: "sk_test_51SOYTmCvGKn4CNyQaJfoQksfh6y6jdvWuYQxIgqAxekY9Fn7ciw3wSae6uvJ69NCfjC48G0wUfCarcWO3q5FfrQQ0063BEGd6a"
       - key: STRIPE_PUBLISHABLE_KEY
-        value: "pk_tu_clave_publica_de_stripe"
+        value: "pk_test_51SOYTmCvGKn4CNyQ9NmkXxdPiCJ06ezsHJpMmbTCx9gRIH1PMKxBPk7P8dlrUIzBrNFywqv9oPouZvH53yjgbf3a00Aj2yzZaX"
       - key: PLATFORM_COMMISSION_RATE
         value: "0.15"
 
