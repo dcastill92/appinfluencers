@@ -54,7 +54,8 @@ async def seed_initial_data(db: AsyncSession):
             role=UserRole.EMPRESA,
             is_approved=True,
             is_active=True,
-            trial_start_date=datetime.utcnow() - timedelta(days=30)
+            trial_start_time=datetime.utcnow() - timedelta(days=30),
+            has_active_subscription=True
         )
         db.add(empresa)
 

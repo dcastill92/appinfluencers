@@ -50,7 +50,8 @@ async def seed_database():
                 role=UserRole.EMPRESA,
                 is_approved=True,
                 is_active=True,
-                trial_start_date=datetime.utcnow() - timedelta(days=30)  # Trial expirado
+                trial_start_time=datetime.utcnow() - timedelta(days=30),  # Trial expirado
+                has_active_subscription=True
             )
             db.add(empresa)
             print("✅ Empresa creada: empresa@test.com / empresa123")
