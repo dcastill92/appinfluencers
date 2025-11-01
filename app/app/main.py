@@ -16,12 +16,20 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS - Allow all origins for now
+# Configure CORS
+# Note: Cannot use allow_origins=["*"] with allow_credentials=True
+# Must specify exact origins when using credentials
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://influencers-frontend.onrender.com",
+        "https://influencers-api.onrender.com",
+        "https://influencers-api-bj5q.onrender.com"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
@@ -64,7 +72,7 @@ async def startup_event():
     print(f"Starting {settings.APP_NAME} v{settings.VERSION}")
     print(f"Environment: {settings.ENVIRONMENT}")
     print(f"Debug mode: {settings.DEBUG}")
-    print(f"CORS: Allowing all origins (*)") 
+    print(f"CORS: Configured for specific origins (credentials enabled)")
     print(f"Database URL: {settings.DATABASE_URL[:20]}...")
     
     # Auto-seed database if empty
