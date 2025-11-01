@@ -69,18 +69,24 @@ async def startup_event():
     
     # Auto-seed database if empty
     try:
+        print("🔄 Iniciando proceso de auto-seed...")
         from app.core.database import AsyncSessionLocal, engine, Base
         from app.core.seed import seed_initial_data
         
         # Crear tablas si no existen
+        print("📋 Creando tablas...")
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+        print("✅ Tablas verificadas/creadas")
         
         # Seed data si la BD está vacía
+        print("🌱 Verificando datos iniciales...")
         async with AsyncSessionLocal() as db:
             await seed_initial_data(db)
     except Exception as e:
         print(f"⚠️  Error durante auto-seed: {e}")
+        import traceback
+        traceback.print_exc()
         # No interrumpir el inicio de la app
 
 
