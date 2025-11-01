@@ -35,6 +35,8 @@ services:
         value: "1531422201378331" 
       - key: FACEBOOK_APP_SECRET
         value: "67e9b81b1ae62703dd9f45417ff4d548"
+      - key: INSTAGRAM_ACCESS_TOKEN
+        value: "234324324324"
 
   # 3. Frontend Next.js
   - type: web
