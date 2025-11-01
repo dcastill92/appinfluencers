@@ -1,20 +1,44 @@
 services:
-  # Base de datos PostgreSQL
+  # 1. Base de datos PostgreSQL
   - type: db
     name: influencers-db
     databaseName: influencers_82bo
     plan: free
 
-  # Backend FastAPI
+  # 2. Backend FastAPI
   - type: web
     name: influencers-api
     env: docker
     repo: https://github.com/dcastill92/appinfluencers
     dockerfilePath: ./Dockerfile
     plan: free
-    healthCheckPath: /health
+    healthCheckPath: / # Ruta más segura para el health check
+    
+    # --- ¡SECCIÓN AÑADIDA! ---
+    # Aquí es donde va tu conexión a la base de datos
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: influencers-db
+          property: connectionString
+      
+      # Variables de seguridad que tu app necesita para arrancar
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
 
-  # Frontend Next.js
+      # Variables de Meta (¡DEBES REEMPLAZARLAS!)
+      - key: FACEBOOK_APP_ID
+        value: "1531422201378331" 
+      - key: FACEBOOK_APP_SECRET
+        value: "67e9b81b1ae62703dd9f45417ff4d548"
+      - key: INSTAGRAM_ACCESS_TOKEN
+        value: "PEGA_TU_ACCESS_TOKEN_AQUI"
+
+  # 3. Frontend Next.js
   - type: web
     name: influencers-frontend
     env: next
@@ -26,8 +50,13 @@ services:
       - frontend/**
       
     envVars:
+      # --- ¡INDENTACIÓN CORREGIDA! ---
       - key: NEXT_PUBLIC_API_URL
-       fromService:
+        fromService:
           type: web
           name: influencers-api 
-          property: url 
+          property: url
+      
+      # Variable de Meta para el Frontend
+      - key: NEXT_PUBLIC_FACEBOOK_APP_ID
+        value: "1531422201378331" # Usa el mismo App ID que arriba
