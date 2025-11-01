@@ -66,6 +66,22 @@ async def startup_event():
     print(f"Debug mode: {settings.DEBUG}")
     print(f"CORS: Allowing all origins (*)") 
     print(f"Database URL: {settings.DATABASE_URL[:20]}...")
+    
+    # Auto-seed database if empty
+    try:
+        from app.core.database import AsyncSessionLocal, engine, Base
+        from app.core.seed import seed_initial_data
+        
+        # Crear tablas si no existen
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        
+        # Seed data si la BD está vacía
+        async with AsyncSessionLocal() as db:
+            await seed_initial_data(db)
+    except Exception as e:
+        print(f"⚠️  Error durante auto-seed: {e}")
+        # No interrumpir el inicio de la app
 
 
 @app.on_event("shutdown")

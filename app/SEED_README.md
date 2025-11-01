@@ -1,6 +1,8 @@
-# 🌱 Seed de Base de Datos
+# 🌱 Auto-Seed de Base de Datos
 
-Este script pobla la base de datos con datos de prueba para desarrollo y testing.
+La aplicación **automáticamente** carga datos de prueba al iniciar si la base de datos está vacía.
+
+No necesitas ejecutar ningún script manualmente. Los datos se crean automáticamente en el primer inicio.
 
 ## 📦 Datos que se crean
 
@@ -55,31 +57,30 @@ Este script pobla la base de datos con datos de prueba para desarrollo y testing
 - Portfolio con 2 campañas anteriores
 - 4 notificaciones de ejemplo
 
-## 🚀 Cómo ejecutar el seed
+## 🚀 Cómo funciona
 
-### Opción 1: Localmente
+### Automático ✨
+
+Cuando la aplicación inicia:
+1. Verifica si hay usuarios en la base de datos
+2. Si está vacía, crea automáticamente:
+   - Las tablas necesarias
+   - Los usuarios de prueba
+   - Campañas de ejemplo
+   - Notificaciones
+   - Todos los datos relacionados
+
+### Manual (Opcional)
+
+Si necesitas ejecutar el seed manualmente:
 
 ```bash
 # Desde la carpeta app/
 cd app
-
-# Asegúrate de tener las variables de entorno configuradas
-# DATABASE_URL debe apuntar a tu base de datos
-
-# Ejecutar el script
 python seed_data.py
 ```
 
-### Opción 2: En Render (Producción)
-
-**IMPORTANTE:** Solo ejecuta esto si quieres poblar la base de datos de producción con datos de prueba.
-
-1. Conéctate a tu servicio en Render
-2. Abre una shell
-3. Ejecuta:
-```bash
-python seed_data.py
-```
+**Nota:** Normalmente no necesitas hacer esto, ya que el seed es automático.
 
 ## ⚠️ Advertencias
 
