@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import FacebookLoginButton from '@/components/FacebookLoginButton';
 import Logo from '@/components/Logo';
 
 export default function LoginPage() {
@@ -42,42 +41,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleFacebookSuccess = async (accessToken: string, userData: any) => {
-    try {
-      setError(null);
-      console.log('Facebook Access Token:', accessToken);
-      console.log('Facebook User Data:', userData);
-
-      // TODO: Enviar el token y datos al backend para crear/autenticar usuario
-      // Por ahora solo mostramos los datos
-      alert(`¡Bienvenido ${userData.name}!\n\nEmail: ${userData.email || 'No disponible'}\nID: ${userData.id}`);
-      
-      // Aquí deberías hacer una llamada a tu backend para:
-      // 1. Verificar si el usuario existe (por facebook_id o email)
-      // 2. Si no existe, crear una cuenta nueva
-      // 3. Si existe, hacer login
-      // 4. Retornar tu propio JWT token
-      
-      // Ejemplo:
-      // const response = await api.post('/auth/facebook-login', {
-      //   facebook_token: accessToken,
-      //   facebook_id: userData.id,
-      //   email: userData.email,
-      //   name: userData.name,
-      //   picture: userData.picture?.data?.url
-      // });
-      // await login con el token de tu backend
-      
-    } catch (err: any) {
-      console.error('Error con Facebook login:', err);
-      setError('❌ Error al iniciar sesión con Facebook. Por favor intenta de nuevo.');
-    }
-  };
-
-  const handleFacebookError = (error: any) => {
-    console.error('Facebook login error:', error);
-    setError('❌ Error al conectar con Facebook.');
-  };
 
   return (
     <div className="min-h-screen grid place-items-center p-4 bg-gradient-to-br from-purple-50 to-pink-50">
@@ -126,23 +89,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">O continúa con</span>
-          </div>
-        </div>
-
-        {/* Facebook Login */}
-        <FacebookLoginButton 
-          onSuccess={handleFacebookSuccess}
-          onError={handleFacebookError}
-        />
-
-        <div className="text-xs text-muted-foreground mt-4 text-center">
+        <div className="text-xs text-muted-foreground mt-6 text-center">
           ¿No tienes cuenta? <Link className="underline" href="/registro">Regístrate</Link>
         </div>
       </div>

@@ -38,7 +38,11 @@ class Settings(BaseSettings):
     TIKTOK_CLIENT_SECRET: Optional[str] = None
     
     # CORS
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8000"]
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://influencers-frontend.onrender.com"
+    ]
     
     model_config = SettingsConfigDict(
         env_file=".env",
