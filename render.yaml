@@ -1,9 +1,8 @@
-services:
+databases:
   # 1. Base de datos PostgreSQL
-  - type: db
-    name: influencers-db
+  - name: influencers-db
     databaseName: influencers_82bo
-    plan: free
+    plan: free # El plan gratuito de Render
 
   # 2. Backend FastAPI
   - type: web
