@@ -19,10 +19,6 @@ from app.schemas.campaign_schemas import (
     CampaignResponse,
     CampaignActionRequest,
 )
-from app.schemas.payment_schemas import (
-    PaymentCreate,
-    PaymentResponse,
-)
 from app.schemas.notification_schemas import (
     NotificationResponse,
 )
@@ -44,8 +40,6 @@ __all__ = [
     "CampaignUpdate",
     "CampaignResponse",
     "CampaignActionRequest",
-    "PaymentCreate",
-    "PaymentResponse",
     "NotificationResponse",
     "MessageCreate",
     "MessageResponse",
