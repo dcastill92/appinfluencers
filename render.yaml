@@ -3,7 +3,8 @@ databases:
   - name: influencers-db
     databaseName: influencers_82bo
     plan: free # El plan gratuito de Render
-
+    
+services:
   # 2. Backend FastAPI
   - type: web
     name: influencers-api
