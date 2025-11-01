@@ -1,12 +1,4 @@
 {
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  }
-},
-{
   "name": "influencers-platform-frontend",
   "version": "1.0.0",
   "private": true,
