@@ -15,6 +15,7 @@ services:
         generateValue: true
 
   # Backend FastAPI
+  # Configuración actualizada - Sin Stripe, Facebook, Instagram
   - type: web
     name: influencers-api
     env: docker
@@ -33,17 +34,21 @@ services:
         value: production
       - key: DEBUG
         value: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_PUBLISHABLE_KEY
-        sync: false
-      - key: FACEBOOK_APP_ID
-        value: "1531422201378331"
-      - key: FACEBOOK_APP_SECRET
-        value: "67e9b81b1ae62703dd9f45417ff4d548"
+      - key: TRIAL_DURATION_HOURS
+        value: 24
       - key: TIKTOK_CLIENT_KEY
         sync: false
       - key: TIKTOK_CLIENT_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
         sync: false
 
   # Frontend Next.js
