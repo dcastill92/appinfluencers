@@ -41,10 +41,14 @@ services:
   # 3. Frontend Next.js
   - type: web
     name: influencers-frontend
-    env: next
+    runtime: node # ARREGLO: Se define como 'node'
     repo: https://github.com/dcastill92/appinfluencers
     rootDir: ./frontend 
     plan: free
+    
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    
     buildFilter:
       paths:
       - frontend/**
