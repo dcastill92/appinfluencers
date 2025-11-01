@@ -103,12 +103,6 @@ class Campaign(Base):
         foreign_keys=[influencer_id]
     )
     
-    payments: Mapped[list["Payment"]] = relationship(
-        "Payment",
-        back_populates="campaign",
-        cascade="all, delete-orphan"
-    )
-    
     messages: Mapped[list["Message"]] = relationship(
         "Message",
         back_populates="campaign",

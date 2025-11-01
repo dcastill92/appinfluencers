@@ -11,9 +11,6 @@ class InfluencerProfileCreate(BaseModel):
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
     
-    instagram_handle: Optional[str] = None
-    instagram_followers: Optional[int] = Field(None, ge=0)
-    
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = Field(None, ge=0)
     
@@ -34,9 +31,6 @@ class InfluencerProfileUpdate(BaseModel):
     """Schema for updating an influencer profile."""
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
-    
-    instagram_handle: Optional[str] = None
-    instagram_followers: Optional[int] = Field(None, ge=0)
     
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = Field(None, ge=0)
@@ -60,9 +54,6 @@ class InfluencerProfileResponse(BaseModel):
     user_id: int
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
-    
-    instagram_handle: Optional[str] = None
-    instagram_followers: Optional[int] = None
     
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = None

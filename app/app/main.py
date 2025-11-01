@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import auth, users, profiles, campaigns, payments, notifications, subscription_plans, transactions, social_media
+from app.api import auth, users, profiles, campaigns, notifications, subscription_plans, transactions
 
 # Create FastAPI app
 app = FastAPI(
@@ -30,11 +30,9 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(profiles.router)
 app.include_router(campaigns.router)
-app.include_router(payments.router)
 app.include_router(notifications.router)
 app.include_router(subscription_plans.router)
 app.include_router(transactions.router)
-app.include_router(social_media.router)
 
 
 @app.get("/")

@@ -5,7 +5,6 @@ Exports all models for easy importing.
 from app.models.user import User
 from app.models.profile import InfluencerProfile
 from app.models.campaign import Campaign, CampaignStatus
-from app.models.payment import Payment, PaymentStatus
 from app.models.notification import Notification
 from app.models.message import Message
 from app.models.subscription import Subscription, SubscriptionStatus
@@ -17,8 +16,6 @@ __all__ = [
     "InfluencerProfile",
     "Campaign",
     "CampaignStatus",
-    "Payment",
-    "PaymentStatus",
     "Notification",
     "Message",
     "Subscription",

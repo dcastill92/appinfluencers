@@ -33,9 +33,6 @@ class InfluencerProfile(Base):
     profile_picture_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     
     # Social Media Metrics
-    instagram_handle: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    instagram_followers: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    
     tiktok_handle: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     tiktok_followers: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     
@@ -46,7 +43,6 @@ class InfluencerProfile(Base):
     average_engagement_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     
     # Social Media Insights (stored as JSON)
-    instagram_insights: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     tiktok_insights: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     
     # Pricing

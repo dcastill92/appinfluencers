@@ -80,18 +80,6 @@ class User(Base):
         foreign_keys="Campaign.influencer_id"
     )
     
-    payments_made: Mapped[list["Payment"]] = relationship(
-        "Payment",
-        back_populates="empresa",
-        foreign_keys="Payment.empresa_id"
-    )
-    
-    payments_received: Mapped[list["Payment"]] = relationship(
-        "Payment",
-        back_populates="influencer",
-        foreign_keys="Payment.influencer_id"
-    )
-    
     notifications: Mapped[list["Notification"]] = relationship(
         "Notification",
         back_populates="user",

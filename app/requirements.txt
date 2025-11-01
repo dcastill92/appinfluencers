@@ -19,9 +19,6 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 email-validator==2.1.0
 
-# Payment Integration
-stripe==7.4.0
-
 # Email (for notifications)
 aiosmtplib==3.0.1
 jinja2==3.1.2

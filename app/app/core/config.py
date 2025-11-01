@@ -26,11 +26,6 @@ class Settings(BaseSettings):
     # Trial Configuration
     TRIAL_DURATION_HOURS: int = 24
     
-    # Stripe
-    STRIPE_SECRET_KEY: str
-    STRIPE_PUBLISHABLE_KEY: str
-    PLATFORM_COMMISSION_RATE: float = 0.15
-    
     # Email (Optional for MVP)
     SMTP_HOST: Optional[str] = None
     SMTP_PORT: Optional[int] = None
@@ -38,10 +33,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: Optional[str] = None
     EMAIL_FROM: Optional[str] = None
     
-    # Social Media APIs
-    FACEBOOK_APP_ID: Optional[str] = None
-    FACEBOOK_APP_SECRET: Optional[str] = None
-    INSTAGRAM_ACCESS_TOKEN: Optional[str] = None
+    # Social Media APIs (TikTok only)
     TIKTOK_CLIENT_KEY: Optional[str] = None
     TIKTOK_CLIENT_SECRET: Optional[str] = None
     
