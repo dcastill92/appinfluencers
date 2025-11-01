@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: influencers_db
+    environment:
+      POSTGRES_USER: influencer_user
+      POSTGRES_PASSWORD: influencer_pass
+      POSTGRES_DB: influencers_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U influencer_user -d influencers_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - influencers_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: influencers_api
+    environment:
+      # Database
+      DATABASE_URL: postgresql+asyncpg://influencer_user:influencer_pass@db:5432/influencers_platform
+      
+      # Security
+      SECRET_KEY: your-secret-key-change-in-production
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      
+      # Trial Configuration
+      TRIAL_DURATION_HOURS: 24
+      
+      # Stripe (use test keys for MVP)
+      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key
+      STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_publishable_key
+      PLATFORM_COMMISSION_RATE: 0.15
+      
+      # Email Configuration (optional for MVP)
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: your-email@gmail.com
+      SMTP_PASSWORD: your-app-password
+      
+      # Social Media APIs Configuration
+      FACEBOOK_APP_ID: "1531422201378331"
+      FACEBOOK_APP_SECRET: "67e9b81b1ae62703dd9f45417ff4d548"
+      INSTAGRAM_ACCESS_TOKEN: "EAAVw0gRQdhsBPymRkFu3cKL6S3Luqk8MuN3QgaoesVOqyzaZCyIb7KRcIAwQNwRxLQApXdZBFZC9NoXuIj2UGgQXTYrUiS5Q4gl596pemoUuw1C6ZCZB2ZCvjEWUsCSh03tgDqmRAvhZAqOk2Rvt0ueeJNlGvw7uZCCZAyHR6afYsv9PSdhDlJPSC3ZC37iqQdvuag3ZASkdZCW1PjZAfAZAj501FbqqQgWjTXGBs26QaquDdddeGXmGN91ytGIelCvOalXG33ClZBRbypulDxbOCYQfxlZCfeUp"
+      TIKTOK_CLIENT_KEY: ""
+      TIKTOK_CLIENT_SECRET: ""
+      
+      # Application
+      ENVIRONMENT: development
+      DEBUG: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./alembic:/app/alembic
+    networks:
+      - influencers_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  influencers_network:
+    driver: bridge

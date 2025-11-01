@@ -1,0 +1,59 @@
+"""
+Application configuration using Pydantic Settings.
+Loads configuration from environment variables.
+"""
+from typing import Optional
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Application settings loaded from environment variables."""
+    
+    # Application
+    APP_NAME: str = "Influencers Platform API"
+    VERSION: str = "1.0.0"
+    ENVIRONMENT: str = "development"
+    DEBUG: bool = True
+    
+    # Database
+    DATABASE_URL: str
+    
+    # Security
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    # Trial Configuration
+    TRIAL_DURATION_HOURS: int = 24
+    
+    # Stripe
+    STRIPE_SECRET_KEY: str
+    STRIPE_PUBLISHABLE_KEY: str
+    PLATFORM_COMMISSION_RATE: float = 0.15
+    
+    # Email (Optional for MVP)
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    EMAIL_FROM: Optional[str] = None
+    
+    # Social Media APIs
+    FACEBOOK_APP_ID: Optional[str] = None
+    FACEBOOK_APP_SECRET: Optional[str] = None
+    INSTAGRAM_ACCESS_TOKEN: Optional[str] = None
+    TIKTOK_CLIENT_KEY: Optional[str] = None
+    TIKTOK_CLIENT_SECRET: Optional[str] = None
+    
+    # CORS
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8000"]
+    
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore"
+    )
+
+
+# Global settings instance
+settings = Settings()
