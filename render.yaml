@@ -55,7 +55,7 @@ services:
       - key: EMAIL_FROM
         sync: false
       - key: ALLOWED_ORIGINS
-        value: "https://influencers-frontend.onrender.com"
+        value: "https://influencers-frontend.onrender.com,http://localhost:3000"
 
   # Frontend Next.js
   - type: web
