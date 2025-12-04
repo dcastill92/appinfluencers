@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { LoadingScreen } from '@/components/ui/spinner';
+import Container from '@/components/layout/Container';
 
 interface Campaign {
   id: number;
@@ -55,17 +57,12 @@ export default function CampanasPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando campañas...</p>
-      </div>
-    );
+    return <LoadingScreen message="Cargando campañas..." variant="infinity" />;
   }
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+    <Container size="xl" className="overflow-x-hidden">
+      <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Mis Campañas</h1>
           <button
             onClick={() => router.push('/empresa/campanas/nueva')}
@@ -143,15 +140,14 @@ export default function CampanasPage() {
           </div>
         )}
 
-        <div className="mt-8">
-          <button
-            onClick={() => router.back()}
-            className="text-blue-600 hover:text-blue-800 underline"
-          >
-            ← Volver al Dashboard
-          </button>
-        </div>
+      <div className="mt-8">
+        <button
+          onClick={() => router.back()}
+          className="text-blue-600 hover:text-blue-800 underline"
+        >
+          ← Volver al Dashboard
+        </button>
       </div>
-    </div>
+    </Container>
   );
 }

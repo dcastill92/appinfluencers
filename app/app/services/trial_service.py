@@ -46,9 +46,14 @@ class TrialService:
         if not user.trial_start_time:
             return False
         
+        # Ensure trial_start_time is timezone-aware (MySQL may return naive datetime)
+        trial_start = user.trial_start_time
+        if trial_start.tzinfo is None:
+            trial_start = trial_start.replace(tzinfo=timezone.utc)
+        
         # Calculate trial expiration
         trial_duration = timedelta(hours=settings.TRIAL_DURATION_HOURS)
-        trial_end_time = user.trial_start_time + trial_duration
+        trial_end_time = trial_start + trial_duration
         
         # Check if trial has expired
         if datetime.now(timezone.utc) > trial_end_time:
@@ -164,8 +169,13 @@ class TrialService:
             user.trial_start_time = datetime.now(timezone.utc)
             await self.user_repo.update(user)
         
+        # Ensure trial_start_time is timezone-aware (MySQL may return naive datetime)
+        trial_start = user.trial_start_time
+        if trial_start.tzinfo is None:
+            trial_start = trial_start.replace(tzinfo=timezone.utc)
+        
         trial_duration = timedelta(hours=settings.TRIAL_DURATION_HOURS)
-        trial_end_time = user.trial_start_time + trial_duration
+        trial_end_time = trial_start + trial_duration
         time_remaining = trial_end_time - datetime.now(timezone.utc)
         
         is_active = self.is_trial_active(user)

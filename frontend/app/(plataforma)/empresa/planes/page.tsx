@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import { LoadingScreen } from '@/components/ui/spinner';
 
 interface Plan {
   id: number;
@@ -43,11 +44,7 @@ export default function PlanesPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando planes...</p>
-      </div>
-    );
+    return <LoadingScreen message="Cargando planes de suscripción..." variant="pulse" />;
   }
 
   return (

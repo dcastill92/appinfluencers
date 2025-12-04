@@ -7,6 +7,8 @@ import api from '@/lib/api';
 import SyncSocialMedia from '@/components/SyncSocialMedia';
 import InstagramInsights from '@/components/InstagramInsights';
 import TikTokInsights from '@/components/TikTokInsights';
+import { LoadingScreen, ButtonSpinner } from '@/components/ui/spinner';
+import Container from '@/components/layout/Container';
 
 interface Profile {
   id: number;
@@ -56,9 +58,13 @@ export default function InfluencerPerfilPage() {
       setProfile(response.data);
       
       // Inicializar formData con los datos del perfil
-      const categoriesArray: string[] = response.data.categories 
-        ? Object.values(response.data.categories)
-        : [];
+        // Manejar categories como array (nuevo formato) u objeto (legacy)
+        let categoriesArray: string[] = [];
+        if (response.data.categories) {
+          categoriesArray = Array.isArray(response.data.categories)
+            ? response.data.categories
+            : Object.values(response.data.categories);
+        }
       
       setFormData({
         bio: response.data.bio || '',
@@ -72,8 +78,9 @@ export default function InfluencerPerfilPage() {
       setSelectedCategories(categoriesArray);
     } catch (error: any) {
       if (error.response?.status === 404) {
-        // No profile yet
-        setProfile(null);
+        // No profile yet - redirect to create profile
+        router.push('/influencer/perfil/crear');
+        return;
       }
       console.error('Error fetching profile:', error);
     } finally {
@@ -87,13 +94,6 @@ export default function InfluencerPerfilPage() {
     try {
       setLoading(true);
       
-      // Convertir categorías a objeto
-      
-      const categoriesDict = selectedCategories.reduce((acc: any, cat: string, index: number) => {
-        acc[index.toString()] = cat;
-        return acc;
-      }, {});
-
       const payload = {
         bio: formData.bio,
         instagram_handle: formData.instagram_handle || null,
@@ -101,10 +101,13 @@ export default function InfluencerPerfilPage() {
         tiktok_handle: formData.tiktok_handle || null,
         youtube_handle: formData.youtube_handle || null,
         average_engagement_rate: parseFloat(formData.average_engagement_rate) || 0,
-        categories: categoriesDict,
+        categories: selectedCategories, // Enviar como array, no como objeto
       };
 
-      await api.put('/profiles/me', payload);
+      console.log('Updating profile with payload:', JSON.stringify(payload, null, 2));
+      await api.put('/profiles/me', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
       alert('¡Perfil actualizado exitosamente!');
       setEditing(false);
       fetchProfile(); // Recargar datos
@@ -122,11 +125,7 @@ export default function InfluencerPerfilPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando perfil...</p>
-      </div>
-    );
+    return <LoadingScreen message="Cargando perfil..." variant="orbit" />;
   }
 
   if (!profile) {
@@ -155,14 +154,13 @@ export default function InfluencerPerfilPage() {
 
   if (editing) {
     return (
-      <div className="p-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Editar Mi Perfil</h1>
-          
-          <form onSubmit={handleUpdate} className="bg-white rounded-lg shadow p-6">
-            <div className="space-y-6">
+      <Container size="lg" className="overflow-x-hidden">
+        <h1 className="text-3xl font-bold mb-6">Editar Mi Perfil</h1>
+        
+        <form onSubmit={handleUpdate} className="bg-white rounded-lg shadow p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">s-1 md:grid-cols-2 gap-6">
               {/* Biografía */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-2">
                   Biografía
                 </label>
@@ -176,7 +174,7 @@ export default function InfluencerPerfilPage() {
               </div>
 
               {/* Redes Sociales */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Instagram Handle
@@ -233,7 +231,7 @@ export default function InfluencerPerfilPage() {
               </div>
 
               {/* Estadísticas */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Seguidores en Instagram
@@ -266,7 +264,7 @@ export default function InfluencerPerfilPage() {
               </div>
 
               {/* Categorías */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-2">
                   Categorías de Contenido
                 </label>
@@ -298,7 +296,7 @@ export default function InfluencerPerfilPage() {
               </div>
 
               {/* Botones */}
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-4 md:col-span-2">
                 <button
                   type="button"
                   onClick={() => setEditing(false)}
@@ -309,24 +307,27 @@ export default function InfluencerPerfilPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                   disabled={loading}
                 >
+                  {loading && <ButtonSpinner size="sm" />}
                   {loading ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
               </div>
             </div>
           </form>
-        </div>
-      </div>
+      </Container>
     );
   }
 
   const handleEditClick = () => {
     // Cargar datos actuales al formulario antes de editar
-    const categoriesArray: string[] = profile.categories 
-      ? Object.values(profile.categories)
-      : [];
+      let categoriesArray: string[] = [];
+      if (profile.categories) {
+        categoriesArray = Array.isArray(profile.categories)
+          ? profile.categories
+          : Object.values(profile.categories);
+      }
     
     setFormData({
       bio: profile.bio || '',
@@ -342,9 +343,8 @@ export default function InfluencerPerfilPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+    <Container size="lg" className="overflow-x-hidden">
+      <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Mi Perfil</h1>
           <button
             onClick={handleEditClick}
@@ -399,7 +399,7 @@ export default function InfluencerPerfilPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Categorías</h3>
               <div className="flex flex-wrap gap-2">
-                {profile.categories && Object.values(profile.categories).map((cat: string, index: number) => (
+                 {profile.categories && (Array.isArray(profile.categories) ? profile.categories : Object.values(profile.categories)).map((cat: string, index: number) => (
                   <span
                     key={index}
                     className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
@@ -431,15 +431,14 @@ export default function InfluencerPerfilPage() {
           </div>
         )}
 
-        <div className="mt-8">
-          <button
-            onClick={() => router.back()}
-            className="text-blue-600 hover:text-blue-800 underline"
-          >
-            ← Volver al Dashboard
-          </button>
-        </div>
+      <div className="mt-8">
+        <button
+          onClick={() => router.back()}
+          className="text-blue-600 hover:text-blue-800 underline"
+        >
+          ← Volver al Dashboard
+        </button>
       </div>
-    </div>
+    </Container>
   );
 }

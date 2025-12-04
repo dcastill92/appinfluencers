@@ -1,31 +1,12 @@
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: influencers_db
-    environment:
-      POSTGRES_USER: influencer_user
-      POSTGRES_PASSWORD: influencer_pass
-      POSTGRES_DB: influencers_platform
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U influencer_user -d influencers_platform"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - influencers_network
-
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./app
+      dockerfile: ../Dockerfile
     container_name: influencers_api
     environment:
-      # Database
-      DATABASE_URL: postgresql+asyncpg://influencer_user:influencer_pass@db:5432/influencers_platform
+      # Database (MySQL local en host.docker.internal)
+      DATABASE_URL: mysql://root:1234@host.docker.internal:3306/db_appinfluencers
       
       # Security
       SECRET_KEY: your-secret-key-change-in-production
@@ -58,19 +39,32 @@ services:
       DEBUG: "true"
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ./app:/app/app
-      - ./alembic:/app/alembic
+      - ./app:/app
     networks:
       - influencers_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-volumes:
-  pgdata:
-    driver: local
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+        NEXT_PUBLIC_FACEBOOK_APP_ID: "1531422201378331"
+    container_name: influencers_frontend
+    environment:
+      # Backend interno (comunicación entre contenedores Docker - solo para rewrites server-side)
+      BACKEND_INTERNAL_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - influencers_network
+    command: npm start
 
 networks:
   influencers_network:

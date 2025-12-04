@@ -5,7 +5,9 @@ gunicorn==21.2.0
 
 # Database
 sqlalchemy[asyncio]==2.0.23
-asyncpg==0.29.0
+aiomysql==0.2.0
+PyMySQL==1.1.0
+cryptography==41.0.7
 alembic==1.12.1
 
 # Authentication & Security
@@ -15,9 +17,9 @@ bcrypt==4.0.1
 python-multipart==0.0.6
 
 # Validation & Settings
-pydantic==2.5.0
-pydantic-settings==2.1.0
-email-validator==2.1.0
+pydantic==2.10.3
+pydantic-settings==2.6.1
+email-validator==2.2.0
 
 # Email (for notifications)
 aiosmtplib==3.0.1

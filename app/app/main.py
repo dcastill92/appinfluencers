@@ -1,11 +1,18 @@
 """
 Main FastAPI application entry point.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+import logging
 
 from app.core.config import settings
 from app.api import auth, users, profiles, campaigns, notifications, subscription_plans, transactions
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
@@ -16,14 +23,27 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Add custom validation error handler
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"❌ Validation error on {request.method} {request.url}")
+    # Evitar leer el body para no provocar ClientDisconnect
+    logger.error(f"Errors: {exc.errors()}")
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()},
+    )
+
 # Configure CORS
-# Note: Cannot use allow_origins=["*"] with allow_credentials=True
-# Must specify exact origins when using credentials
+# Configuración simplificada para comunicación interna vía Next.js proxy
+# El frontend usa /api/* que Next.js redirige internamente al backend
+# Esto elimina problemas de CORS en desarrollo
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:8000",
+        "http://localhost:3000",      # Frontend en desarrollo
+        "http://localhost:8000",      # Backend directo (Swagger docs)
+        "http://frontend:3000",       # Frontend en Docker
         "https://influencers-frontend.onrender.com",
         "https://influencers-api.onrender.com",
         "https://influencers-api-bj5q.onrender.com"

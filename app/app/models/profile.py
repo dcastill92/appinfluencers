@@ -33,6 +33,9 @@ class InfluencerProfile(Base):
     profile_picture_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     
     # Social Media Metrics
+    instagram_handle: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    instagram_followers: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
     tiktok_handle: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     tiktok_followers: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     

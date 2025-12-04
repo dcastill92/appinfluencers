@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { ButtonSpinner } from '@/components/ui/spinner';
+import Container from '@/components/layout/Container';
 
 export default function CrearPerfilPage() {
   const { user } = useAuth();
@@ -25,16 +27,14 @@ export default function CrearPerfilPage() {
     try {
       setLoading(true);
       
-      // Convertir categorías de string a objeto
+      // Convertir categorías de string a lista
       const categoriesArray = formData.categories
         .split(',')
         .map(c => c.trim())
         .filter(c => c);
-      
-      const categoriesDict = categoriesArray.reduce((acc: any, cat: string, index: number) => {
-        acc[index.toString()] = cat;
-        return acc;
-      }, {});
+
+      console.log('Categories raw input string:', formData.categories);
+      console.log('CategoriesArray built:', categoriesArray, 'isArray?', Array.isArray(categoriesArray), 'typeof:', typeof categoriesArray);
 
       const payload = {
         bio: formData.bio,
@@ -43,10 +43,14 @@ export default function CrearPerfilPage() {
         tiktok_handle: formData.tiktok_handle || null,
         youtube_handle: formData.youtube_handle || null,
         average_engagement_rate: parseFloat(formData.engagement_rate) || 0,
-        categories: categoriesDict,
+        categories: Array.isArray(categoriesArray) ? categoriesArray : Object.values(categoriesArray as any),
       };
 
-      await api.post('/profiles/', payload);
+      console.log('Sending payload:', JSON.stringify(payload, null, 2));
+      // Enviar explícitamente como JSON para preservar arrays
+      await api.post('/profiles/', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
       alert('¡Perfil creado exitosamente!');
       router.push('/influencer/perfil');
     } catch (error: any) {
@@ -63,14 +67,13 @@ export default function CrearPerfilPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
+    <Container size="lg" className="overflow-x-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8">
           <h1 className="text-3xl font-bold mb-6">Crear Mi Perfil de Influencer</h1>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Biografía */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-2">
                 Biografía <span className="text-red-500">*</span>
               </label>
@@ -85,7 +88,7 @@ export default function CrearPerfilPage() {
             </div>
 
             {/* Redes Sociales */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Instagram Handle
@@ -142,7 +145,7 @@ export default function CrearPerfilPage() {
             </div>
 
             {/* Estadísticas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Número de Seguidores <span className="text-red-500">*</span>
@@ -183,7 +186,7 @@ export default function CrearPerfilPage() {
             </div>
 
             {/* Categorías */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-2">
                 Categorías de Contenido <span className="text-red-500">*</span>
               </label>
@@ -201,7 +204,7 @@ export default function CrearPerfilPage() {
             </div>
 
             {/* Ejemplos de categorías */}
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 md:col-span-2">
               <p className="text-sm font-medium text-purple-900 mb-2">
                 💡 Categorías sugeridas:
               </p>
@@ -224,7 +227,7 @@ export default function CrearPerfilPage() {
             </div>
 
             {/* Botones */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-4 pt-4 md:col-span-2">
               <button
                 type="button"
                 onClick={() => router.back()}
@@ -235,15 +238,16 @@ export default function CrearPerfilPage() {
               </button>
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
+                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 disabled={loading}
               >
+                {loading && <ButtonSpinner size="sm" />}
                 {loading ? 'Creando...' : 'Crear Perfil'}
               </button>
             </div>
           </form>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

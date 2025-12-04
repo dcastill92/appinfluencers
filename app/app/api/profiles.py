@@ -1,8 +1,9 @@
 """
 Influencer profiles router with trial access control.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Cookie, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+import json
 
 from app.core.database import get_db
 from app.models.user import User, UserRole
@@ -18,13 +19,38 @@ from app.api.dependencies import (
     get_current_influencer_user,
     check_trial_access
 )
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/profiles", tags=["Influencer Profiles"])
+
+
+async def fix_categories_in_request(request: Request) -> dict:
+    """
+    Dependency to intercept request body and fix categories array->object issue.
+    Ejecuta ANTES de que Pydantic valide el schema.
+    """
+    body = await request.body()
+    if not body:
+        return {}
+    
+    data = json.loads(body.decode("utf-8"))
+    
+    # Fix categories if it's an object with numeric string keys
+    if "categories" in data and isinstance(data["categories"], dict):
+        keys = list(data["categories"].keys())
+        if all(k.isdigit() for k in keys):
+            # Convert {"0": "Moda", "1": "Belleza"} -> ["Moda", "Belleza"]
+            sorted_keys = sorted(keys, key=int)
+            data["categories"] = [data["categories"][k] for k in sorted_keys]
+            logger.info(f"🔧 Fixed categories from object to array: {data['categories']}")
+    
+    return data
 
 
 @router.post("/", response_model=InfluencerProfileResponse, status_code=status.HTTP_201_CREATED)
 async def create_profile(
-    profile_data: InfluencerProfileCreate,
+    request: Request,
     current_user: User = Depends(get_current_influencer_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -33,6 +59,20 @@ async def create_profile(
     
     Each influencer can only have one profile.
     """
+    # Fix body ANTES de Pydantic validation
+    fixed_data = await fix_categories_in_request(request)
+    logger.info(f"🔵 Received profile data (after fix): {fixed_data}")
+    
+    # Validate with Pydantic manually
+    try:
+        profile_data = InfluencerProfileCreate(**fixed_data)
+    except Exception as e:
+        logger.error(f"❌ Pydantic validation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    
     profile_repo = ProfileRepository(db)
     
     # Check if profile already exists
@@ -78,72 +118,24 @@ async def test_endpoint():
     return {"message": "Test successful", "status": "ok"}
 
 
-@router.get("/me")
+@router.get("/me", response_model=InfluencerProfileResponse)
 async def get_my_profile(
-    access_token: str = Cookie(None)
+    current_user: User = Depends(get_current_influencer_user),
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Get own influencer profile (Influencer only).
     """
-    from app.core.database import get_db
-    from app.core.security import decode_access_token
-    from app.services.auth_service import AuthService
+    profile_repo = ProfileRepository(db)
+    profile = await profile_repo.get_by_user_id(current_user.id)
     
-    if not access_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found. Create one first."
+        )
     
-    # Decode token
-    payload = decode_access_token(access_token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
-    user_id = int(payload.get("sub"))
-    
-    # Get DB session manually
-    async for db in get_db():
-        # Get user
-        auth_service = AuthService(db)
-        current_user = await auth_service.get_current_user(user_id)
-        
-        # Verificar que sea influencer
-        if current_user.role != UserRole.INFLUENCER:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Only influencers can access this endpoint"
-            )
-        
-        profile_repo = ProfileRepository(db)
-        profile = await profile_repo.get_by_user_id(current_user.id)
-        
-        if not profile:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Profile not found. Create one first."
-            )
-        
-        # Convertir a dict manualmente
-        return {
-            "id": profile.id,
-            "user_id": profile.user_id,
-            "bio": profile.bio,
-            "profile_picture_url": profile.profile_picture_url,
-            "instagram_handle": profile.instagram_handle,
-            "instagram_followers": profile.instagram_followers,
-            "tiktok_handle": profile.tiktok_handle,
-            "tiktok_followers": profile.tiktok_followers,
-            "youtube_handle": profile.youtube_handle,
-            "youtube_subscribers": profile.youtube_subscribers,
-            "average_engagement_rate": profile.average_engagement_rate,
-            "suggested_rate_per_post": profile.suggested_rate_per_post,
-            "suggested_rate_per_story": profile.suggested_rate_per_story,
-            "suggested_rate_per_video": profile.suggested_rate_per_video,
-            "categories": profile.categories,
-            "portfolio_items": profile.portfolio_items,
-            "total_campaigns_completed": profile.total_campaigns_completed,
-            "average_rating": profile.average_rating,
-            "created_at": profile.created_at.isoformat() if profile.created_at else None,
-            "updated_at": profile.updated_at.isoformat() if profile.updated_at else None,
-        }
+    return profile
 
 
 @router.get("/{profile_id}", response_model=InfluencerProfileResponse)
@@ -198,13 +190,27 @@ async def get_profile_by_user(
 
 @router.put("/me", response_model=InfluencerProfileResponse)
 async def update_my_profile(
-    profile_data: InfluencerProfileUpdate,
+    request: Request,
     current_user: User = Depends(get_current_influencer_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
     Update own influencer profile (Influencer only).
     """
+    # Fix body ANTES de Pydantic validation
+    fixed_data = await fix_categories_in_request(request)
+    logger.info(f"🟡 Update profile data (after fix): {fixed_data}")
+    
+    # Validate with Pydantic manually
+    try:
+        profile_data = InfluencerProfileUpdate(**fixed_data)
+    except Exception as e:
+        logger.error(f"❌ Pydantic validation failed on update: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    
     profile_repo = ProfileRepository(db)
     profile = await profile_repo.get_by_user_id(current_user.id)
     

@@ -2,15 +2,15 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import Container from '@/components/layout/Container';
 
 export default function InfluencerDashboardPage() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
+    <Container size="xl" className="overflow-x-hidden">
+      <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard Influencer</h1>
             <button
@@ -64,14 +64,16 @@ export default function InfluencerDashboardPage() {
                 >
                   💬 Mensajes
                 </button>
-                <button className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded">
+                <button 
+                  onClick={() => router.push('/influencer/pagos')}
+                  className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded"
+                >
                   💰 Historial de Pagos
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </Container>
   );
 }

@@ -2,7 +2,7 @@
 Pydantic schemas for influencer profiles.
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 
@@ -11,6 +11,9 @@ class InfluencerProfileCreate(BaseModel):
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
     
+    instagram_handle: Optional[str] = None
+    instagram_followers: Optional[int] = Field(None, ge=0)
+    
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = Field(None, ge=0)
     
@@ -23,7 +26,7 @@ class InfluencerProfileCreate(BaseModel):
     suggested_rate_per_story: Optional[float] = Field(None, ge=0)
     suggested_rate_per_video: Optional[float] = Field(None, ge=0)
     
-    categories: Optional[dict] = None
+    categories: Optional[List[str]] = None
     portfolio_items: Optional[dict] = None
 
 
@@ -32,6 +35,9 @@ class InfluencerProfileUpdate(BaseModel):
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
     
+    instagram_handle: Optional[str] = None
+    instagram_followers: Optional[int] = Field(None, ge=0)
+    
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = Field(None, ge=0)
     
@@ -44,7 +50,7 @@ class InfluencerProfileUpdate(BaseModel):
     suggested_rate_per_story: Optional[float] = Field(None, ge=0)
     suggested_rate_per_video: Optional[float] = Field(None, ge=0)
     
-    categories: Optional[dict] = None
+    categories: Optional[List[str]] = None
     portfolio_items: Optional[dict] = None
 
 
@@ -54,6 +60,9 @@ class InfluencerProfileResponse(BaseModel):
     user_id: int
     bio: Optional[str] = None
     profile_picture_url: Optional[str] = None
+    
+    instagram_handle: Optional[str] = None
+    instagram_followers: Optional[int] = None
     
     tiktok_handle: Optional[str] = None
     tiktok_followers: Optional[int] = None
@@ -67,7 +76,7 @@ class InfluencerProfileResponse(BaseModel):
     suggested_rate_per_story: Optional[float] = None
     suggested_rate_per_video: Optional[float] = None
     
-    categories: Optional[dict] = None
+    categories: Optional[List[str]] = None
     portfolio_items: Optional[dict] = None
     
     total_campaigns_completed: int

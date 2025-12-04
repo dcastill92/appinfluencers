@@ -4,6 +4,8 @@ import { useSearchProfiles } from '@/services/profileService';
 import { useAuth } from '@/hooks/useAuth';
 import ProfileCard from '@/components/features/ProfileCard';
 import TrialPaywall from '@/components/features/TrialPaywall';
+import { LoadingScreen } from '@/components/ui/spinner';
+import Container from '@/components/layout/Container';
 import { useState } from 'react';
 
 export default function ExplorarPage() {
@@ -35,11 +37,11 @@ export default function ExplorarPage() {
   };
 
   if (isLoading) {
-    return <div>Cargando perfiles...</div>;
+    return <LoadingScreen message="Cargando influencers..." variant="wave" />;
   }
 
   return (
-    <div>
+    <Container size="xl" className="overflow-x-hidden">
       <h1 className="text-3xl font-bold mb-6">Explorar Influencers</h1>
 
       {trialStatus?.is_active && (
@@ -65,6 +67,6 @@ export default function ExplorarPage() {
       {showPaywall && (
         <TrialPaywall onClose={() => setShowPaywall(false)} />
       )}
-    </div>
+    </Container>
   );
 }

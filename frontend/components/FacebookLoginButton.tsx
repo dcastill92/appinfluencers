@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ButtonSpinner } from '@/components/ui/spinner';
 
 interface FacebookLoginButtonProps {
   onSuccess: (accessToken: string, userData: any) => void;
@@ -92,7 +93,7 @@ export default function FacebookLoginButton({ onSuccess, onError }: FacebookLogi
     >
       {isLoading ? (
         <>
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+          <ButtonSpinner />
           <span>Conectando...</span>
         </>
       ) : (

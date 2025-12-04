@@ -48,11 +48,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.data.role === 'EMPRESA') {
         await fetchTrialStatus();
       }
-    } catch (error) {
-      // User not authenticated
-      console.log('AuthContext: User not authenticated');
+    } catch (error: any) {
+      // User not authenticated or token expired
+      console.log('AuthContext: User not authenticated or token expired');
       setUser(null);
       setTrialStatus(null);
+      
+      // If we get 401, redirect to login
+      if (error.response?.status === 401) {
+        console.log('AuthContext: Redirecting to login due to 401');
+        try {
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            router.push('/login');
+          }
+        } catch (err) {
+          console.error('AuthContext: redirect error', err);
+        }
+      }
     } finally {
       setIsLoading(false);
     }

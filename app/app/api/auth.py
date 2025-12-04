@@ -1,7 +1,7 @@
 """
 Authentication router for user registration and login.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -69,6 +69,88 @@ async def login(
     )
     
     return Token(access_token=access_token)
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(
+    response: Response,
+    access_token: str = Cookie(None),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Refresh access token.
+    
+    Validates the current token and issues a new one if valid.
+    Sets new httpOnly cookie and returns new token in response.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"🔄 Refresh token called. Token present: {bool(access_token)}")
+    
+    if not access_token:
+        logger.warning("❌ No token provided in refresh request")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No token provided",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Decode and validate current token
+    from app.core.security import decode_access_token
+    payload = decode_access_token(access_token)
+    if not payload:
+        logger.warning("❌ Token decode failed or token expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Get user from database
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        logger.warning("❌ No user ID in token payload")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    try:
+        user_id = int(user_id_str)
+    except ValueError:
+        logger.warning("❌ Invalid user ID format in token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID in token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    auth_service = AuthService(db)
+    user = await auth_service.get_current_user(user_id)
+    if not user:
+        logger.warning(f"❌ User {user_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Create new token
+    new_access_token = auth_service.create_token(user)
+    logger.info(f"✅ New token created for user {user_id}")
+    
+    # Set new httpOnly cookie
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    
+    return Token(access_token=new_access_token)
 
 
 @router.post("/logout")

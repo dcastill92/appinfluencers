@@ -2,15 +2,15 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import Container from '@/components/layout/Container';
 
 export default function EmpresaDashboardPage() {
   const { user, trialStatus, logout } = useAuth();
   const router = useRouter();
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
+    <Container size="xl" className="overflow-x-hidden">
+      <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard Empresa</h1>
             <button
@@ -106,7 +106,6 @@ export default function EmpresaDashboardPage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </Container>
   );
 }

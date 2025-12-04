@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/api';
+import { LoadingScreen } from '@/components/ui/spinner';
 
 interface Plan {
   id: number;
@@ -138,11 +139,7 @@ export default function AdminPlanesPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando planes...</p>
-      </div>
-    );
+    return <LoadingScreen message="Cargando planes..." variant="pulse" />;
   }
 
   return (

@@ -18,7 +18,9 @@ export default function SyncSocialMedia({ onSyncComplete }: SyncSocialMediaProps
 
   const fetchConfig = async () => {
     try {
-      const response = await api.get('/social-media/config');
+      // TODO: Implement /social-media/config endpoint
+      // const response = await api.get('/social-media/config');
+      const response = { data: { facebook_app_id: null } }; // Mock response
       setConfig(response.data);
     } catch (error) {
       console.error('Error fetching social media config:', error);

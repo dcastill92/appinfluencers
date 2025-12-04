@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { LoadingScreen } from '@/components/ui/spinner';
 
 interface Campaign {
   id: number;
@@ -38,11 +39,7 @@ export default function InfluencerCampanasPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando campañas...</p>
-      </div>
-    );
+    return <LoadingScreen message="Cargando campañas disponibles..." variant="infinity" />;
   }
 
   return (
