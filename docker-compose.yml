@@ -1,12 +1,56 @@
 services:
+  # PostgreSQL Database (default)
+  db:
+    image: postgres:16-alpine
+    container_name: influencers_db
+    environment:
+      POSTGRES_USER: influencers_user
+      POSTGRES_PASSWORD: influencers_password
+      POSTGRES_DB: db_appinfluencers
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U influencers_user -d db_appinfluencers"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - influencers_network
+  
+  # MySQL Database (optional - uncomment to use instead of PostgreSQL)
+  # db:
+  #   image: mysql:8.0
+  #   container_name: influencers_db
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root_password
+  #     MYSQL_DATABASE: db_appinfluencers
+  #     MYSQL_USER: influencers_user
+  #     MYSQL_PASSWORD: influencers_password
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - influencers_network
+
   api:
     build:
       context: ./app
       dockerfile: ../Dockerfile
     container_name: influencers_api
     environment:
-      # Database (MySQL local en host.docker.internal)
-      DATABASE_URL: mysql://root:1234@host.docker.internal:3306/db_appinfluencers
+      # Database - PostgreSQL (default)
+      DATABASE_URL: postgresql://influencers_user:influencers_password@db:5432/db_appinfluencers
+      
+      # If switching to MySQL, use:
+      # DATABASE_URL: mysql://influencers_user:influencers_password@db:3306/db_appinfluencers
       
       # Security
       SECRET_KEY: your-secret-key-change-in-production
@@ -69,3 +113,9 @@ services:
 networks:
   influencers_network:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  # mysql_data:
+  #   driver: local

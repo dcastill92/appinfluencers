@@ -3,8 +3,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
+# Instalar dependencias del sistema para PostgreSQL y MySQL
+# PostgreSQL (default): libpq-dev
+# MySQL (optional): default-libmysqlclient-dev
 RUN apt-get update && apt-get install -y \
+    libpq-dev \
     default-libmysqlclient-dev \
     build-essential \
     pkg-config \

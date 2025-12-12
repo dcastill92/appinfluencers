@@ -5,8 +5,11 @@ gunicorn==21.2.0
 
 # Database
 sqlalchemy[asyncio]==2.0.23
-aiomysql==0.2.0
-PyMySQL==1.1.0
+# PostgreSQL (default)
+asyncpg==0.29.0
+# MySQL (optional - uncomment if switching to MySQL)
+# aiomysql==0.2.0
+# PyMySQL==1.1.0
 cryptography==41.0.7
 alembic==1.12.1
 

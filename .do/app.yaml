@@ -1,11 +1,12 @@
 name: appinfluencers
 region: nyc
 
-# Database (MySQL managed by Digital Ocean)
+# Database (PostgreSQL managed by Digital Ocean)
+# To switch to MySQL: change engine to MYSQL, version to "8", and name to db-mysql
 databases:
-  - name: db-mysql
-    engine: MYSQL
-    version: "8"
+  - name: db-postgres
+    engine: PG
+    version: "16"
     production: true
     cluster_name: appinfluencers-db
 
@@ -25,10 +26,14 @@ services:
     instance_size_slug: basic-xxs
     
     envs:
-      # Database - will be injected by Digital Ocean
+      # Database - PostgreSQL (will be injected by Digital Ocean)
       - key: DATABASE_URL
         scope: RUN_TIME
-        value: ${db-mysql.DATABASE_URL}
+        value: ${db-postgres.DATABASE_URL}
+      
+      # To switch to MySQL, change the above to:
+      # value: ${db-mysql.DATABASE_URL}
+      # And update the databases section at the top of this file
       
       # Security - IMPORTANT: Change SECRET_KEY in production
       - key: SECRET_KEY
