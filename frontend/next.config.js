@@ -3,7 +3,23 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    domains: ['localhost', 'influencers-api.onrender.com'],
+    domains: [
+      'localhost',
+      'influencers-api.onrender.com',
+      'scontent.cdninstagram.com',
+      'scontent-lga3-1.cdninstagram.com',
+      'scontent-lga3-2.cdninstagram.com',
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

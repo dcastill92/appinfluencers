@@ -63,7 +63,7 @@ async def login(
         key="access_token",
         value=access_token,
         httponly=True,  # Cannot be accessed by JavaScript (XSS protection)
-        secure=False,   # Set to True in production (HTTPS only)
+        secure=settings.ENVIRONMENT == "production",  # HTTPS only in production
         samesite="lax", # CSRF protection
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # seconds
     )
@@ -145,7 +145,7 @@ async def refresh_token(
         key="access_token",
         value=new_access_token,
         httponly=True,
-        secure=False,
+        secure=settings.ENVIRONMENT == "production",
         samesite="lax",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )

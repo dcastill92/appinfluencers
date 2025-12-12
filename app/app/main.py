@@ -35,9 +35,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # Configure CORS
-# Configuración simplificada para comunicación interna vía Next.js proxy
+# Configuración para desarrollo y producción
 # El frontend usa /api/* que Next.js redirige internamente al backend
-# Esto elimina problemas de CORS en desarrollo
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -46,7 +45,8 @@ app.add_middleware(
         "http://frontend:3000",       # Frontend en Docker
         "https://influencers-frontend.onrender.com",
         "https://influencers-api.onrender.com",
-        "https://influencers-api-bj5q.onrender.com"
+        "https://influencers-api-bj5q.onrender.com",
+        "https://*.ondigitalocean.app",  # Digital Ocean App Platform
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
