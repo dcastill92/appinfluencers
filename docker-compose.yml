@@ -6,13 +6,13 @@ services:
     environment:
       POSTGRES_USER: influencers_user
       POSTGRES_PASSWORD: influencers_password
-      POSTGRES_DB: db_appinfluencers
+      POSTGRES_DB: dfkj68lnvi5nki
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U influencers_user -d db_appinfluencers"]
+      test: ["CMD-SHELL", "pg_isready -U influencers_user -d dfkj68lnvi5nki"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,10 +47,10 @@ services:
     container_name: influencers_api
     environment:
       # Database - PostgreSQL (default)
-      DATABASE_URL: postgresql://influencers_user:influencers_password@db:5432/db_appinfluencers
+      DATABASE_URL: postgresql://influencers_user:influencers_password@db:5432/dfkj68lnvi5nki
       
       # If switching to MySQL, use:
-      # DATABASE_URL: mysql://influencers_user:influencers_password@db:3306/db_appinfluencers
+      # DATABASE_URL: mysql://influencers_user:influencers_password@db:3306/dfkj68lnvi5nki
       
       # Security
       SECRET_KEY: your-secret-key-change-in-production
